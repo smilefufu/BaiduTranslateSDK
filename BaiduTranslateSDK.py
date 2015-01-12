@@ -13,7 +13,7 @@ class BaiduTranslate(object):
 
     def translate(self, q, fr="auto", to="auto"):
         try:
-            q = q.decode("utf8")
+            q = q.encode("utf8")
         except:
             pass
         q = quote(q)
