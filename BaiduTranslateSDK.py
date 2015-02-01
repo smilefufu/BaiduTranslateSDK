@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import escape
 import json
 import httplib2
-from urllib import quote
+import traceback
 
 class BaiduTranslate(object):
     def __init__(self, client_id):
@@ -12,11 +13,8 @@ class BaiduTranslate(object):
         self.api = "http://openapi.baidu.com/public/2.0/bmt/translate"
 
     def translate(self, q, fr="auto", to="auto"):
-        try:
-            q = q.encode("utf8")
-        except:
-            pass
-        q = quote(q)
+        q = escape.xhtml_unescape(q)
+        q = escape.url_escape(q)
         _body = "client_id=%s&q=%s&from=%s&to=%s" % (self.client_id, q, fr, to)
         _max_retry = 3
         _tried = 0
@@ -26,7 +24,6 @@ class BaiduTranslate(object):
                 _response, _content = self.http.request(self.api, "POST", _body)
                 _tried = 3
             except:
-                import traceback
                 print traceback.format_exc()
                 pass
             _tried += 1
@@ -35,7 +32,6 @@ class BaiduTranslate(object):
             _result = json.loads(_content)
             return "\n".join(p['dst'] for p in _result['trans_result'])
         except:
-            import traceback
             print traceback.format_exc()
             pass
         return None
