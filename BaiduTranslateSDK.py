@@ -13,6 +13,7 @@ class BaiduTranslate(object):
         self.api = "http://openapi.baidu.com/public/2.0/bmt/translate"
 
     def translate(self, q, fr="auto", to="auto"):
+        if not q: return ""
         q = escape.xhtml_unescape(q)
         q = escape.url_escape(q)
         _body = "client_id=%s&q=%s&from=%s&to=%s" % (self.client_id, q, fr, to)
@@ -25,16 +26,17 @@ class BaiduTranslate(object):
                 _tried = 3
             except:
                 print traceback.format_exc()
-                pass
             _tried += 1
 
+        _result = None
         try:
             _result = json.loads(_content)
             return "\n".join(p['dst'] for p in _result['trans_result'])
         except:
             print traceback.format_exc()
-            pass
-        return None
+            print "content:", _content
+            print "result:", _result
+        return ""
 
 if __name__ == "__main__":
     import sys
